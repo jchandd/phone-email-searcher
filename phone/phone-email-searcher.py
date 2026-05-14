@@ -4,7 +4,11 @@
 # While doing this project make sure to use regular expressions to find the phone numbers and email addresses
 # You can use the re module in python to work with regular expressions
 
- 
+import re
+import pyperclip
+# Get the text from the clipboard
+text = pyperclip.paste()
+# Create a regex for phone numbers
 
 
 
