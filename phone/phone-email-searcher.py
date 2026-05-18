@@ -47,3 +47,10 @@ for groups in phoneRegex.findall(text):
 for groups in emailRegex.findall(text): # emailRegex.findall() returns a list of tuples, where each tuple contains the matched groups. In this case, we are interested in the first group, which is the entire email address. Therefore, we append groups[0] to the matches list.
     matches.append(groups[0])
 
+# Copy results to clipboard
+if len(matches) > 0:
+    pyperclip.copy('\n'.join(matches))
+    print('Copied to clipboard:')
+    print('\n'.join(matches))
+else:
+    print('No phone numbers or email addresses found.')
