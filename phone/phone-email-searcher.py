@@ -36,11 +36,14 @@ matches = []
 
 # Find phone numbers
 for groups in phoneRegex.findall(text):
-    phoneNum = '-'.join([groups[1], groups[3], groups[5]])
+    phoneNum = '-'.join([groups[1], groups[3], groups[5]]) # groups[1] is the area code, groups[3] is the first 3 digits, and groups[5] is the last 4 digits. We join them with a hyphen to create a standard phone number format.
 
     if groups[8] != '':
-        phoneNum += ' x' + groups[8]
+        phoneNum += ' x' + groups[8] # If there is an extension, we add it to the phone number with an 'x' before it.
 
-    matches.append(phoneNum)
+    matches.append(phoneNum) 
 
+# Find email addresses
+for groups in emailRegex.findall(text): # emailRegex.findall() returns a list of tuples, where each tuple contains the matched groups. In this case, we are interested in the first group, which is the entire email address. Therefore, we append groups[0] to the matches list.
+    matches.append(groups[0])
 
