@@ -3,11 +3,14 @@
 # It will put only phone numbers and email addresses it found into the clipboard
 # While doing this project make sure to use regular expressions to find the phone numbers and email addresses
 # You can use the re module in python to work with regular expressions
+# make somewhere for the user to input the text they want to search through, or you can use the clipboard to get the text
+
 
 import pyperclip
 import re
 
-# Phone Number Regex
+# Phone Number Regex Pattern
+# Pattern: (area code) + separator + (first 3 digits) + separator + (last 4 digits) + optional (extension)
 phoneRegex = re.compile(r'''
 (
     (\d{3}|\(\d{3}\))?      # area code
@@ -19,38 +22,50 @@ phoneRegex = re.compile(r'''
 )
 ''', re.VERBOSE)
 
-# Email regex
+
+# Email Address Regex
 emailRegex = re.compile(r'''
 (
-    [a-zA-Z0-9._%+-]+       # username
-    @                       # @ symbol
-    [a-zA-Z0-9.-]+          # domain name
-    (\.[a-zA-Z]{2,4})       # dot-something
+    [a-zA-Z0-9._%+-]+
+    @
+    [a-zA-Z0-9.-]+
+    \.[a-zA-Z]{2,}
 )
 ''', re.VERBOSE)
 
-# Find matches in clipboard text
-text = str(pyperclip.paste())
+
+
+# Get text from user input
+text = input('Paste text to search for phone numbers and emails: ')
 
 matches = []
+found_phones = set()
+found_emails = set()
 
 # Find phone numbers
 for groups in phoneRegex.findall(text):
-    phoneNum = '-'.join([groups[1], groups[3], groups[5]]) # groups[1] is the area code, groups[3] is the first 3 digits, and groups[5] is the last 4 digits. We join them with a hyphen to create a standard phone number format.
-
-    if groups[8] != '':
-        phoneNum += ' x' + groups[8] # If there is an extension, we add it to the phone number with an 'x' before it.
-
-    matches.append(phoneNum) 
+    area = groups[1] if groups[1] else ''
+    first3 = groups[3]
+    last4 = groups[5]
+    phoneNum = '-'.join(filter(None, [area, first3, last4]))
+    if groups[8]:
+        phoneNum += ' x' + groups[8]
+    if phoneNum and phoneNum not in found_phones:
+        matches.append(phoneNum)
+        found_phones.add(phoneNum)
 
 # Find email addresses
-for groups in emailRegex.findall(text): # emailRegex.findall() returns a list of tuples, where each tuple contains the matched groups. In this case, we are interested in the first group, which is the entire email address. Therefore, we append groups[0] to the matches list.
-    matches.append(groups[0])
+for groups in emailRegex.findall(text):
+    email = groups[0] if isinstance(groups, tuple) else groups
+    if email not in found_emails:
+        matches.append(email)
+        found_emails.add(email)
 
 # Copy results to clipboard
-if len(matches) > 0:
+if matches:
     pyperclip.copy('\n'.join(matches))
     print('Copied to clipboard:')
     print('\n'.join(matches))
 else:
     print('No phone numbers or email addresses found.')
+
