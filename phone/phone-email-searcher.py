@@ -9,8 +9,7 @@
 import pyperclip
 import re
 
-# Phone Number Regex Pattern
-# Pattern: (area code) + separator + (first 3 digits) + separator + (last 4 digits) + optional (extension)
+# Phone Number Regex
 phoneRegex = re.compile(r'''
 (
     (\d{3}|\(\d{3}\))?      # area code
@@ -26,10 +25,10 @@ phoneRegex = re.compile(r'''
 # Email Address Regex
 emailRegex = re.compile(r'''
 (
-    [a-zA-Z0-9._%+-]+
-    @
-    [a-zA-Z0-9.-]+
-    \.[a-zA-Z]{2,}
+    [a-zA-Z0-9._%+-]+ # username
+    @                 # @ symbol
+    [a-zA-Z0-9.-]+    # domain name
+    \.[a-zA-Z]{2,}    # dot-something
 )
 ''', re.VERBOSE)
 
@@ -43,27 +42,27 @@ found_phones = set()
 found_emails = set()
 
 # Find phone numbers
-for groups in phoneRegex.findall(text):
+for groups in phoneRegex.findall(text): # groups is a tuple of all the matched groups in the regex
     area = groups[1] if groups[1] else ''
     first3 = groups[3]
     last4 = groups[5]
-    phoneNum = '-'.join(filter(None, [area, first3, last4]))
+    phoneNum = '-'.join(filter(None, [area, first3, last4])) # filter out empty strings and join with dashes
     if groups[8]:
-        phoneNum += ' x' + groups[8]
+        phoneNum += ' x' + groups[8] # Add extension if it exists
     if phoneNum and phoneNum not in found_phones:
-        matches.append(phoneNum)
+        matches.append(phoneNum) # Add the phone number to the matches list if it's not empty and not already found
         found_phones.add(phoneNum)
 
 # Find email addresses
-for groups in emailRegex.findall(text):
-    email = groups[0] if isinstance(groups, tuple) else groups
-    if email not in found_emails:
+for groups in emailRegex.findall(text): # groups is a tuple of all the matched groups in the regex, but since we only have one group in the email regex, we can just take the first element
+    email = groups[0] if isinstance(groups, tuple) else groups 
+    if email not in found_emails:  
         matches.append(email)
         found_emails.add(email)
 
 # Copy results to clipboard
 if matches:
-    pyperclip.copy('\n'.join(matches))
+    pyperclip.copy('\n'.join(matches)) # Join the matches with newlines and copy to clipboard
     print('Copied to clipboard:')
     print('\n'.join(matches))
 else:
