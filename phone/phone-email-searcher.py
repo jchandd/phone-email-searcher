@@ -55,9 +55,9 @@ for groups in phoneRegex.findall(text): # groups is a tuple of all the matched g
 # Find email addresses
 for groups in emailRegex.findall(text):
 
-    email = groups[0]
+    email = groups[0] 
 
-    if email not in found_emails:
+    if email not in found_emails: # Add the email to the matches list if it's not already found
         matches.append(email)
         found_emails.add(email)
 
