@@ -4,7 +4,7 @@
 # While doing this project make sure to use regular expressions to find the phone numbers and email addresses
 # You can use the re module in python to work with regular expressions
 # make somewhere for the user to input the text they want to search through, or you can use the clipboard to get the text
-
+# Make sure after code is copy and pasted it finds phone numbers and email addresses in the text and copies them to the clipboard
 
 import pyperclip
 import re
@@ -25,20 +25,19 @@ phoneRegex = re.compile(r'''
 # Email Address Regex
 emailRegex = re.compile(r'''
 (
-    [a-zA-Z0-9._%+-]+ # username
-    @                 # @ symbol
-    [a-zA-Z0-9.-]+    # domain name
-    \.[a-zA-Z]{2,}    # dot-something
+    [a-zA-Z0-9._%+-]+       # username
+    @                       # @ symbol
+    [a-zA-Z0-9.-]+          # domain name
+    (\.[a-zA-Z]{2,4})      # dot-something
 )
 ''', re.VERBOSE)
-
 
 
 # Get text from user input
 text = input('Paste text to search for phone numbers and emails: ')
 
 matches = []
-found_phones = set()
+found_phones = set() # Set to keep track of found phone numbers to avoid duplicates
 found_emails = set()
 
 # Find phone numbers
@@ -55,16 +54,18 @@ for groups in phoneRegex.findall(text): # groups is a tuple of all the matched g
 
 # Find email addresses
 for groups in emailRegex.findall(text):
+
     email = groups[0]
+
     if email not in found_emails:
         matches.append(email)
         found_emails.add(email)
 
 # Copy results to clipboard
-if matches:
+if matches: 
     pyperclip.copy('\n'.join(matches)) # Join the matches with newlines and copy to clipboard
     print('Copied to clipboard:')
-    print('\n'.join(matches))
+    print('\n'.join(matches)) # Print the matches to the console as well
 else:
     print('No phone numbers or email addresses found.')
 
